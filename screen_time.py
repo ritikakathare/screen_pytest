@@ -12,6 +12,8 @@ def analyze_screen_time(hours):
         suggestion = "Take breaks and limit usage."
 
     return total_time, category, suggestion
+
+
 if __name__ == "__main__":
 
     print("====================================")
@@ -19,20 +21,25 @@ if __name__ == "__main__":
     print("====================================")
 
     try:
-        n = int(input("Enter number of apps used today: "))
+        try:
+            # Try taking user input (works locally)
+            n = int(input("Enter number of apps used today: "))
+        except EOFError:
+            # Jenkins fallback (no input available)
+            print("No input detected. Running with default values for CI.")
+            n = 3
+            hours = [1.5, 2.0, 1.0]
 
         if n <= 0:
             raise ValueError("Number of apps must be positive")
 
-        hours = []
-
-        for i in range(1, n + 1):
-            h = float(input(f"Enter screen time (hours) for App {i}: "))
-
-            if h < 0:
-                raise ValueError("Screen time cannot be negative")
-
-            hours.append(h)
+        if 'hours' not in locals():
+            hours = []
+            for i in range(1, n + 1):
+                h = float(input(f"Enter screen time (hours) for App {i}: "))
+                if h < 0:
+                    raise ValueError("Screen time cannot be negative")
+                hours.append(h)
 
         total, category, suggestion = analyze_screen_time(hours)
 
